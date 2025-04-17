@@ -154,7 +154,7 @@ pip install -e .  # This will install dependencies as specified in pyproject.tom
 
 ### More Tutorials
 
-To discover how to create profiles for large-scale users, as well as how to visualize and analyze social simulation data once your experiment concludes, please refer to [More Tutorials](tutorials/tutorial.md) for detailed guidance.
+To discover how to create profiles for large-scale users, as well as how to visualize and analyze social simulation data once your experiment concludes, please refer to [More Tutorials](tutorial.md) for detailed guidance.
 
 <div align="center">
   <img src="assets/tutorial.png" alt="Tutorial Overview">
