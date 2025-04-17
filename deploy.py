@@ -49,7 +49,7 @@ if __name__ == "__main__":
         8010, 8011, 8012, 8013, 8014,
         8015
     ]
-    gpus = [0, 1, 2, 3, 4, 5, 6, 7]  # GPU 设备编号
+    gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]  # GPU 设备编号
 
     # ports = [port for row in ports for port in row]  # 转换为一维数组
     '''
@@ -76,7 +76,7 @@ if __name__ == "__main__":
             f"--served-model-name 'Qwen2.5-7B' "  # 对外暴露的模型名称
             # f"--tensor-parallel-size 8 "  # GPU 并行数，单卡部署需关闭
             f"--host {host} --port {ports[i]} "  # 绑定IP和端口
-            f"--gpu-memory-utilization 0.9 "  # 设置GPU显存利用率阈值
+            f"--gpu-memory-utilization 0.8 "  # 设置GPU显存利用率阈值
             f"--disable-log-stats")  # 关闭性能统计日志
         t = threading.Thread(target=subprocess.run,
                                 args=(cmd, ),
