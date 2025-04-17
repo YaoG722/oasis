@@ -3,6 +3,7 @@ data:
   user_path: ./experiment_dataset/user_data/user_data_1000.json
   pair_path: ./experiment_dataset/agent_360/counterfact.json
   db_path: ./experiments/reddit_simulation_counterfactual/counterfactual_1000_up.db
+
 simulation:
   recsys_type: reddit
   controllable_user: true
@@ -18,10 +19,11 @@ simulation:
   refresh_rec_post_count: 5
   init_post_score: 1
   action_space_file_path: ./scripts/reddit_simulation_counterfactual/action_space_prompt.txt
+
 inference:
-  model_type: llama-3
-  model_path: Orenguteng/Llama-3-8B-Lexi-Uncensored
-  stop_tokens: [<|eot_id|>, <|end_of_text|>]
-  server_url:
-    - host: 10.109.1.8
-      ports: [8002, 8003, 8005]
+  model_type: Qwen2.5-7B  # 使用的模型名称（Qwen2.5-7b）
+  model_path: /models/Qwen2.5-7B-Instruct  # 本地模型路径
+  stop_tokens: [<|eot_id|>, <|end_of_text|>]  # 停止生成的标记
+  server_url:  # 本地模型服务器的地址和端口
+    - host: 127.0.0.1  # 服务器主机地址
+      ports: [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007]  # 可用的端口列表
