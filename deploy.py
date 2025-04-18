@@ -75,8 +75,8 @@ if __name__ == "__main__":
             f"CUDA_VISIBLE_DEVICES={gpu} "  # 指定 GPU
             f"python3 -m "
             f"vllm.entrypoints.openai.api_server "
-            f"--model '/models/Qwen2.5-7B-Instruct' "  # 模型路径
-            f"--served-model-name 'Qwen2.5-7B' "  # 对外暴露的模型名称
+            f"--model '/models/Meta-Llama-3-8B-Instruct' "  # 模型路径
+            f"--served-model-name 'llama-3' "  # 对外暴露的模型名称
             # f"--tensor-parallel-size 8 "  # GPU 并行数，单卡部署需关闭
             f"--host {host} --port {ports[i]} "  # 绑定IP和端口
             f"--gpu-memory-utilization 0.9 "  # 设置GPU显存利用率阈值
