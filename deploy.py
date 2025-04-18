@@ -69,7 +69,7 @@ if __name__ == "__main__":
     for i, gpu in enumerate(gpus):
         cmd = (
             # f"TF_ENABLE_DEPRECATION_WARNINGS=1 "  # 启用TensorFlow的弃用功能警告
-            f"VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 "  # 允许模型支持超过默认最大长度的上下文
+            # f"VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 "  # 允许模型支持超过默认最大长度的上下文
             f"VLLM_ENFORCE_CUDA_GRAPH=1 "  # 强制使用CUDA Graph优化推理流程
             f"VLLM_FORCE_USE_CUDA_GRAPH=1 "  # 强制使用CUDA Graph优化推理流程
             f"CUDA_VISIBLE_DEVICES={gpu} "  # 指定 GPU
@@ -80,7 +80,7 @@ if __name__ == "__main__":
             # f"--tensor-parallel-size 8 "  # GPU 并行数，单卡部署需关闭
             f"--host {host} --port {ports[i]} "  # 绑定IP和端口
             f"--gpu-memory-utilization 0.9 "  # 设置GPU显存利用率阈值
-            f"--max-model-len 25600 "  # 设置模型最大上下文长度
+            # f"--max-model-len 25600 "  # 设置模型最大上下文长度
             # f"--enable-chunked-prefill "  # 启用分块预填充
             # f"--max-num-batched-tokens 2048 "  # 最大批处理令牌数
             # f"--max-num-seqs 128 "  # 最大序列数
