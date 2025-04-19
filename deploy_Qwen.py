@@ -79,11 +79,11 @@ if __name__ == "__main__":
             f"--served-model-name 'Qwen2.5-7B' "  # 对外暴露的模型名称
             # f"--tensor-parallel-size 8 "  # GPU 并行数，单卡部署需关闭
             f"--host {host} --port {ports[i]} "  # 绑定IP和端口
-            f"--gpu-memory-utilization 0.85 "  # 设置GPU显存利用率阈值
-            f"--max-model-len 25600 "  # 设置模型最大上下文长度
+            f"--gpu-memory-utilization 0.8 "  # 设置GPU显存利用率阈值
+            f"--max-model-len 12800 "  # 设置模型最大上下文长度
             # f"--enable-chunked-prefill "  # 启用分块预填充
             # f"--max-num-batched-tokens 2048 "  # 最大批处理令牌数
-            # f"--max-num-seqs 128 "  # 最大序列数
+            f"--max-num-seqs 128 "  # 最大序列数
             f"--disable-log-stats")  # 关闭性能统计日志
         t = threading.Thread(target=subprocess.run,
                                 args=(cmd, ),
