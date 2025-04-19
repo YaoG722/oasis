@@ -12,8 +12,8 @@ simulation:
   activate_prob: 0.1
   clock_factor: 10
   num_timesteps: 30
-  max_rec_post_len: 250
-  round_post_num: 150
+  max_rec_post_len: 200
+  round_post_num: 100
   follow_post_agent: false
   mute_post_agent: false
   refresh_rec_post_count: 5
