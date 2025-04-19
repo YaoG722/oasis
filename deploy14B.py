@@ -50,8 +50,7 @@ if __name__ == "__main__":
         8015
     ]
     gpus = [
-        0, 1, 
-        # 2, 3, 4, 5, 6, 7,
+        0, 1, 2, 3, 4, 5, 6, 7,
         # 8, 9, 10, 11, 12, 13, 14, 15
     ]  # GPU 设备编号
 
@@ -73,7 +72,7 @@ if __name__ == "__main__":
             # f"VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 "  # 允许模型支持超过默认最大长度的上下文
             f"VLLM_ENFORCE_CUDA_GRAPH=1 "  # 强制使用CUDA Graph优化推理流程
             f"VLLM_FORCE_USE_CUDA_GRAPH=1 "  # 强制使用CUDA Graph优化推理流程
-            f"CUDA_VISIBLE_DEVICES={gpu * 2},{gpu + 1} "  # 指定 GPU
+            f"CUDA_VISIBLE_DEVICES={gpu * 2},{gpu * 2 + 1} "  # 指定 GPU
             f"python3 -m "
             f"vllm.entrypoints.openai.api_server "
             f"--model '/models/Qwen2.5-14B-Instruct' "  # 模型路径
