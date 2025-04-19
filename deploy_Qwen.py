@@ -81,8 +81,8 @@ if __name__ == "__main__":
             f"--host {host} --port {ports[i]} "  # 绑定IP和端口
             f"--gpu-memory-utilization 0.8 "  # 设置GPU显存利用率阈值
             f"--max-model-len 32768 "  # 设置模型最大上下文长度
-            # f"--enable-chunked-prefill "  # 启用分块预填充
-            # f"--max-num-batched-tokens 2048 "  # 最大批处理令牌数
+            f"--enable-chunked-prefill "  # 启用分块预填充
+            f"--max-num-batched-tokens 2048 "  # 最大批处理令牌数
             f"--max-num-seqs 128 "  # 最大序列数
             f"--disable-log-stats")  # 关闭性能统计日志
         t = threading.Thread(target=subprocess.run,
