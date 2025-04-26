@@ -51,7 +51,7 @@ if __name__ == "__main__":
     ]
     gpus = [
         0, 1, 2, 3, 4, 5, 6, 7,
-        8, 9, 10, 11, 12, 13, 14, 15
+        # 8, 9, 10, 11, 12, 13, 14, 15
     ]  # GPU 设备编号
 
     # ports = [port for row in ports for port in row]  # 转换为一维数组
