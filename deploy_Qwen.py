@@ -86,6 +86,7 @@ if __name__ == "__main__":
             # f"--enable-chunked-prefill=True "  # 启用分块预填充
             # f"--max-num-batched-tokens 2048 "  # 最大批处理令牌数
             # f"--max-num-seqs 16 "  # 最大序列数 (512)
+            f"--trust-remote-code " # 信任远程代码
             f"--disable-log-stats")  # 关闭性能统计日志
         t = threading.Thread(target=subprocess.run,
                                 args=(cmd, ),
