@@ -90,7 +90,7 @@ def get_random_country():
     country = random.choices(countries, country_ratio)[0]
     if country == "Other":
         response = client.chat.completions.create(
-            model="llama-3",
+            model="Qwen2.5-7B",
             messages=[{
                 "role": "system",
                 "content": "Select a real country name randomly, you shall only give the country name, "
@@ -124,7 +124,7 @@ def get_interested_topics(mbti, age, gender, country, profession):
     [list of topic numbers]
     Ensure your output could be parsed to **list**, don't output anything else."""  # noqa: E501
 
-    response = client.chat.completions.create(model="llama-3",
+    response = client.chat.completions.create(model="Qwen2.5-7B",
                                               messages=[{
                                                   "role": "system",
                                                   "content": prompt
@@ -151,7 +151,7 @@ def generate_user_profile(age, gender, mbti, profession, topics):
     }}
     Ensure the output can be directly parsed to **JSON**, do not output anything else."""  # noqa: E501
 
-    response = client.chat.completions.create(model="llama-3",
+    response = client.chat.completions.create(model="Qwen2.5-7B",
                                               messages=[{
                                                   "role": "system",
                                                   "content": prompt
