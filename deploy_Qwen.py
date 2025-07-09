@@ -83,7 +83,7 @@ if __name__ == "__main__":
             f"--enable-auto-tool-choice --tool-call-parser hermes "  # 启用自动工具选择和Hermes工具调用解析器
             f"--host {host} --port {ports[i]} "  # 绑定IP和端口
             f"--gpu-memory-utilization 0.9 "  # 设置GPU显存利用率阈值 (0.9)
-            # f"--max-model-len 65536 "  # 设置模型最大上下文长度 (max: 32768)
+            f"--max-model-len 32768 "  # 设置模型最大上下文长度 (max: 32768)
             # f"--enable-chunked-prefill=True "  # 启用分块预填充
             # f"--max-num-batched-tokens 2048 "  # 最大批处理令牌数
             # f"--max-num-seqs 16 "  # 最大序列数 (512)
