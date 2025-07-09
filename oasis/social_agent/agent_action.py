@@ -26,38 +26,42 @@ class SocialAction:
         self.channel = channel
 
     def get_openai_function_list(self) -> list[FunctionTool]:
-        return [
-            FunctionTool(func) for func in [
-                self.create_post,
-                self.like_post,
-                self.repost,
-                self.quote_post,
-                self.unlike_post,
-                self.dislike_post,
-                self.undo_dislike_post,
-                self.search_posts,
-                self.search_user,
-                self.trend,
-                self.refresh,
-                self.do_nothing,
-                self.create_comment,
-                self.like_comment,
-                self.dislike_comment,
-                self.unlike_comment,
-                self.undo_dislike_comment,
-                self.follow,
-                self.unfollow,
-                self.mute,
-                self.unmute,
-                self.purchase_product,
-                self.interview,
-                self.report_post,
-                self.join_group,
-                self.leave_group,
-                self.send_to_group,
-                self.create_group,
-            ]
-        ]
+        tools = []
+        for func in [
+            self.create_post,
+            self.like_post,
+            self.repost,
+            self.quote_post,
+            self.unlike_post,
+            self.dislike_post,
+            self.undo_dislike_post,
+            self.search_posts,
+            self.search_user,
+            self.trend,
+            self.refresh,
+            self.do_nothing,
+            self.create_comment,
+            self.like_comment,
+            self.dislike_comment,
+            self.unlike_comment,
+            self.undo_dislike_comment,
+            self.follow,
+            self.unfollow,
+            self.mute,
+            self.unmute,
+            self.purchase_product,
+            self.interview,
+            self.report_post,
+            self.join_group,
+            self.leave_group,
+            self.send_to_group,
+            self.create_group,
+        ]:
+            tool = FunctionTool(func)
+            # 移除strict参数
+            tool.schema_.pop("strict", None)
+            tools.append(tool)
+        return tools
 
     async def perform_action(self, message: Any, type: str):
         message_id = await self.channel.write_to_receive_queue(
