@@ -26,7 +26,7 @@ async def main():
     # NOTE: You need to deploy the vllm server first
     vllm_model_1 = ModelFactory.create(
         model_platform=ModelPlatformType.VLLM,
-        model_type="Qwen2.5-7B",
+        model_type="Qwen3-8B-AWQ",
         # TODO: change to your own vllm server url
         url="http://127.0.0.1:8000/v1",
     )
@@ -40,7 +40,10 @@ async def main():
     # Define the models for agents. Agents will select models based on
     # round-robin strategy
     shared_model_manager = ModelManager(
-        models=[vllm_model_1, vllm_model_2],
+        models=[
+            vllm_model_1, 
+            # vllm_model_2
+            ],
         scheduling_strategy='round_robin',
     )
 
