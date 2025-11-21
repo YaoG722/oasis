@@ -50,8 +50,8 @@ if __name__ == "__main__":
         8015
     ]
     gpus = [
-        0, 1,
-        # 2,
+        0,
+        # 1, 2,
         # 3, 4, 5, 6, 7,
         # 8, 9, 10, 11, 12, 13, 14, 15
     ]  # GPU 设备编号
@@ -72,23 +72,33 @@ if __name__ == "__main__":
         cmd = (
             # f"TF_ENABLE_DEPRECATION_WARNINGS=1 "  # 启用TensorFlow的弃用功能警告
             # f"VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 "  # 允许模型支持超过默认最大长度的上下文
-            f"VLLM_ENFORCE_CUDA_GRAPH=1 "  # 强制使用CUDA Graph优化推理流程
-            f"VLLM_FORCE_USE_CUDA_GRAPH=1 "  # 强制使用CUDA Graph优化推理流程
+
+            # f"VLLM_ENFORCE_CUDA_GRAPH=1 "  # 强制使用CUDA Graph优化推理流程
+            # f"VLLM_FORCE_USE_CUDA_GRAPH=1 "  # 强制使用CUDA Graph优化推理流程
+            
             # f"PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True "  # PyTorch CUDA内存分配配置
             f"CUDA_VISIBLE_DEVICES={gpu} "  # 指定 GPU
             f"python3 -m "
             f"vllm.entrypoints.openai.api_server "
-            f"--model '/models/Qwen2.5-7B-Instruct' "  # 模型路径
-            f"--served-model-name 'Qwen2.5-7B' "  # 对外暴露的模型名称
+            f"--model '/root/autodl-tmp/models/Qwen3-8B-AWQ' "  # 模型路径
+            f"--served-model-name 'Qwen3-8B-AWQ' "  # 对外暴露的模型名称
+
+            f"--quantization awq "
+            f"--dtype half "
+
             # f"--tensor-parallel-size 8 "  # GPU 并行数，单卡部署需关闭
+            
             f"--enable-auto-tool-choice --tool-call-parser hermes "  # 启用自动工具选择和Hermes工具调用解析器
+            f"--reasoning-parser deepseek_r1 "  # 启用DeepSeek R1推理解析器
+
             f"--host {host} --port {ports[i]} "  # 绑定IP和端口
             f"--gpu-memory-utilization 0.9 "  # 设置GPU显存利用率阈值 (0.9)
-            # f"--max-model-len 32768 "  # 设置模型最大上下文长度 (max: 32768)
+            f"--max-model-len 16384 "  # 设置模型最大上下文长度 (max: 32768)
             # f"--enable-chunked-prefill=True "  # 启用分块预填充
             # f"--max-num-batched-tokens 2048 "  # 最大批处理令牌数
             # f"--max-num-seqs 16 "  # 最大序列数 (512)
-            # f"--trust-remote-code " # 信任远程代码
+
+            f"--trust-remote-code " # 信任远程代码
             # f"--disable-log-stats"  # 关闭性能统计日志
         )
         t = threading.Thread(target=subprocess.run,
