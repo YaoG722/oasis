@@ -83,7 +83,7 @@ if __name__ == "__main__":
             f"--model '/root/autodl-tmp/models/Qwen3-8B-AWQ' "  # 模型路径
             f"--served-model-name 'Qwen3-8B-AWQ' "  # 对外暴露的模型名称
 
-            f"--quantization awq "
+            f"--quantization awq_marlin "
             f"--dtype half "
 
             # f"--tensor-parallel-size 8 "  # GPU 并行数，单卡部署需关闭
