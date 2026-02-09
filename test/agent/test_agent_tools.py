@@ -80,7 +80,7 @@ async def test_agents_posting(setup_platform):
 
     response = await agents[1].perform_action_by_llm()
 
-    assert any(tool_call.tool_name == "multiply"
+    assert any(tool_call.tool_name in ["multiply", "math_multiply"]
                for tool_call in response.info['tool_calls'])
 
     await channel.write_to_receive_queue((None, None, "exit"))

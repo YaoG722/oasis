@@ -25,8 +25,8 @@
 
 [Community](https://github.com/camel-ai/camel#community) |
 [Paper](https://arxiv.org/abs/2411.11581) |
-[Examples](https://github.com/camel-ai/oasis/tree/main/scripts) |
-[Dataset](https://huggingface.co/datasets/oasis-agent/oasis-dataset) |
+[Examples](https://github.com/camel-ai/oasis/tree/main/examples) |
+[Dataset](https://huggingface.co/datasets/echo-yiyiyi/oasis-dataset) |
 [Citation](https://github.com/camel-ai/oasis#-citation) |
 [Contributing](https://github.com/camel-ai/oasis#-contributing-to-oasis) |
 [CAMEL-AI](https://www.camel-ai.org/)
@@ -249,8 +249,9 @@ To discover how to create profiles for large-scale users, as well as how to visu
 
 ### Latest Updates
 
-📢 Add the report post action to mark inappropriate content. - 📆 June 8, 2025
+📢 Update the camel-ai version to 0.2.78 and update the dataset HuggingFace link.  - 📆 December 4, 2025
 
+- Add the report post action to mark inappropriate content. - 📆 June 8, 2025
 - Add features for creating group chats, sending messages in group chats, and leaving group chats. - 📆 June 6, 2025
 - Support Interview Action for asking agents specific questions and getting answers. - 📆 June 2, 2025
 - Support customization of each agent's models, tools, and prompts; refactor the interface to follow the PettingZoo style. - 📆 May 22, 2025
