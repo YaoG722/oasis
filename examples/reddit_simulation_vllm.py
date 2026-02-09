@@ -20,47 +20,30 @@ from camel.configs import QwenConfig
 
 import oasis
 from oasis import (ActionType, LLMAction, ManualAction,
-                   generate_twitter_agent_graph)
+                   generate_reddit_agent_graph)
 
 
 async def main():
-    # NOTE: You need to deploy the vllm server first
-    vllm_model_1 = ModelFactory.create(
+    # Define the model for the agents
+    vllm_model = ModelFactory.create(
         model_platform=ModelPlatformType.VLLM,
         model_type="Qwen3-8B-AWQ",
-        # TODO: change to your own vllm server url
         model_config_dict=QwenConfig(max_tokens=16384).as_dict(),
-        url="http://127.0.0.1:8000/v1",
-    )
-    vllm_model_2 = ModelFactory.create(
-        model_platform=ModelPlatformType.VLLM,
-        model_type="Qwen2.5-7B",
         # TODO: change to your own vllm server url
-        url="http://127.0.0.1:8001/v1",
-    )
-
-    # Define the models for agents. Agents will select models based on
-    # round-robin strategy
-    shared_model_manager = ModelManager(
-        models=[
-            vllm_model_1, 
-            # vllm_model_2
-            ],
-        scheduling_strategy='round_robin',
+        url="http://127.0.0.1:8000/v1",
     )
 
     # Define the available actions for the agents
-    available_actions = ActionType.get_default_twitter_actions()
+    available_actions = ActionType.get_default_reddit_actions()
 
-    agent_graph = await generate_twitter_agent_graph(
-        profile_path=("data/twitter_dataset/anonymous_topic_200_1h/"
-                      "False_Business_0.csv"),
-        model=shared_model_manager,
+    agent_graph = await generate_reddit_agent_graph(
+        profile_path="./data/reddit/user_data_36.json",
+        model=vllm_model,
         available_actions=available_actions,
     )
 
     # Define the path to the database
-    db_path = "./data/twitter_simulation.db"
+    db_path = "./data/reddit_simulation.db"
     os.environ["OASIS_DB_PATH"] = os.path.abspath(db_path)
 
     # Delete the old database
@@ -70,7 +53,7 @@ async def main():
     # Make the environment
     env = oasis.make(
         agent_graph=agent_graph,
-        platform=oasis.DefaultPlatformType.TWITTER,
+        platform=oasis.DefaultPlatformType.REDDIT,
         database_path=db_path,
     )
 
@@ -78,33 +61,30 @@ async def main():
     await env.reset()
 
     actions_1 = {}
-
-    actions_1[env.agent_graph.get_agent(0)] = ManualAction(
-        action_type=ActionType.CREATE_POST,
-        action_args={"content": "Earth is flat."})
+    actions_1[env.agent_graph.get_agent(0)] = [
+        ManualAction(action_type=ActionType.CREATE_POST,
+                     action_args={"content": "Hello, world!"}),
+        ManualAction(action_type=ActionType.CREATE_COMMENT,
+                     action_args={
+                         "post_id": "1",
+                         "content": "Welcome to the OASIS World!"
+                     })
+    ]
+    actions_1[env.agent_graph.get_agent(1)] = ManualAction(
+        action_type=ActionType.CREATE_COMMENT,
+        action_args={
+            "post_id": "1",
+            "content": "I like the OASIS world."
+        })
     await env.step(actions_1)
 
     actions_2 = {
         agent: LLMAction()
-        # Activate 5 agents with id 1, 3, 5, 7, 9
-        for _, agent in env.agent_graph.get_agents([1, 3, 5, 7, 9])
-    }
-
-    await env.step(actions_2)
-
-    actions_3 = {}
-
-    actions_3[env.agent_graph.get_agent(1)] = ManualAction(
-        action_type=ActionType.CREATE_POST,
-        action_args={"content": "Earth is not flat."})
-    await env.step(actions_3)
-
-    actions_4 = {
-        agent: LLMAction()
-        # get all agents
         for _, agent in env.agent_graph.get_agents()
     }
-    await env.step(actions_4)
+
+    # Perform the actions
+    await env.step(actions_2)
 
     # Close the environment
     await env.close()
