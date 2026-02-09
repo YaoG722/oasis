@@ -15,8 +15,7 @@ import asyncio
 import os
 
 from camel.models import ModelFactory, ModelManager
-from camel.types import ModelPlatformType, ModelType
-from camel.configs import QwenConfig
+from camel.types import ModelPlatformType
 
 import oasis
 from oasis import (ActionType, LLMAction, ManualAction,
@@ -29,7 +28,6 @@ async def main():
         model_platform=ModelPlatformType.VLLM,
         model_type="Qwen3-8B-AWQ",
         # TODO: change to your own vllm server url
-        model_config_dict=QwenConfig(max_tokens=16384).as_dict(),
         url="http://127.0.0.1:8000/v1",
     )
     vllm_model_2 = ModelFactory.create(

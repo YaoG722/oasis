@@ -16,7 +16,6 @@ import os
 
 from camel.models import ModelFactory, ModelManager
 from camel.types import ModelPlatformType, ModelType
-from camel.configs import QwenConfig
 
 import oasis
 from oasis import (ActionType, LLMAction, ManualAction,
@@ -28,7 +27,6 @@ async def main():
     vllm_model = ModelFactory.create(
         model_platform=ModelPlatformType.VLLM,
         model_type="Qwen3-8B-AWQ",
-        model_config_dict=QwenConfig(max_tokens=16384).as_dict(),
         # TODO: change to your own vllm server url
         url="http://127.0.0.1:8000/v1",
     )
