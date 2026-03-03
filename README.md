@@ -267,6 +267,8 @@ To discover how to create profiles for large-scale users, as well as how to visu
 ## 🔎 Follow-up Research
 
 - [MultiAgent4Collusion](https://github.com/renqibing/MultiAgent4Collusion): multi-agent collusion simulation framework in social systems
+- [CUBE](https://github.com/echo-yiyiyi/cube): dynamic simulations in customized unity3D-based environments
+- [MultiAgent4Fraud](https://github.com/zheng977/MutiAgent4Fraud): financial fraud risks by collaborative LLM agents on social platforms
 - More to come...
 
 If your research is based on OASIS, we'd be happy to feature your work here—feel free to reach out or submit a pull request to add it to the [README](https://github.com/camel-ai/oasis/blob/main/README.md)!
