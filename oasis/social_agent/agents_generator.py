@@ -16,7 +16,7 @@ from __future__ import annotations
 import ast
 import asyncio
 import json
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 import pandas as pd
 import tqdm
@@ -569,8 +569,10 @@ async def generate_reddit_agent_graph(
     model: Optional[Union[BaseModelBackend, List[BaseModelBackend],
                           ModelManager]] = None,
     available_actions: list[ActionType] = None,
+    social_agent_kwargs: Optional[dict[str, Any]] = None,
 ) -> AgentGraph:
     agent_graph = AgentGraph()
+    social_agent_kwargs = social_agent_kwargs or {}
     with open(profile_path, "r") as file:
         agent_info = json.load(file)
 
@@ -601,6 +603,7 @@ async def generate_reddit_agent_graph(
             agent_graph=agent_graph,
             model=model,
             available_actions=available_actions,
+            **social_agent_kwargs,
         )
 
         # Add agent to the agent graph
@@ -616,10 +619,12 @@ async def generate_twitter_agent_graph(
     model: Optional[Union[BaseModelBackend, List[BaseModelBackend],
                           ModelManager]] = None,
     available_actions: list[ActionType] = None,
+    social_agent_kwargs: Optional[dict[str, Any]] = None,
 ) -> AgentGraph:
     agent_info = pd.read_csv(profile_path)
 
     agent_graph = AgentGraph()
+    social_agent_kwargs = social_agent_kwargs or {}
 
     for agent_id in range(len(agent_info)):
         profile = {
@@ -643,6 +648,7 @@ async def generate_twitter_agent_graph(
             model=model,
             agent_graph=agent_graph,
             available_actions=available_actions,
+            **social_agent_kwargs,
         )
 
         agent_graph.add_agent(agent)

@@ -17,6 +17,7 @@ import inspect
 import logging
 import sys
 from datetime import datetime
+from uuid import uuid4
 from typing import TYPE_CHECKING, Any, Callable, List, Optional, Union
 
 from camel.agents import ChatAgent
@@ -27,7 +28,8 @@ from camel.toolkits import FunctionTool
 from camel.types import OpenAIBackendRole
 
 from oasis.social_agent.agent_action import SocialAction
-from oasis.social_agent.agent_environment import SocialEnvironment
+from oasis.social_agent.agent_environment import (ObservationConfig,
+                                                  SocialEnvironment)
 from oasis.social_platform import Channel
 from oasis.social_platform.config import UserInfo
 from oasis.social_platform.typing import ActionType
@@ -55,6 +57,8 @@ ALL_SOCIAL_ACTIONS = [action.value for action in ActionType]
 class SocialAgent(ChatAgent):
     r"""Social Agent."""
 
+    _TRANSIENT_OBSERVATION_KEY = "oasis_transient_observation_id"
+
     def __init__(self,
                  agent_id: int,
                  user_info: UserInfo,
@@ -67,11 +71,21 @@ class SocialAgent(ChatAgent):
                  available_actions: list[ActionType] = None,
                  tools: Optional[List[Union[FunctionTool, Callable]]] = None,
                  max_iteration: int = 1,
-                 interview_record: bool = False):
+                 interview_record: bool = False,
+                 message_window_size: int | None = None,
+                 token_limit: int | None = None,
+                 prune_tool_calls_from_memory: bool = False,
+                 persist_environment_observation: bool = True,
+                 observation_config: ObservationConfig | None = None):
         self.social_agent_id = agent_id
         self.user_info = user_info
         self.channel = channel or Channel()
-        self.env = SocialEnvironment(SocialAction(agent_id, self.channel))
+        self.persist_environment_observation = (
+            persist_environment_observation)
+        self.env = SocialEnvironment(
+            SocialAction(agent_id, self.channel),
+            observation_config=observation_config,
+        )
         if user_info_template is None:
             system_message_content = self.user_info.to_system_message()
         else:
@@ -108,6 +122,9 @@ class SocialAgent(ChatAgent):
             model=model,
             scheduling_strategy='random_model',
             tools=all_tools,
+            message_window_size=message_window_size,
+            token_limit=token_limit,
+            prune_tool_calls_from_memory=prune_tool_calls_from_memory,
         )
         self.max_iteration = max_iteration
         self.interview_record = interview_record
@@ -122,6 +139,67 @@ class SocialAgent(ChatAgent):
             "\n"
             "What do you think Helen should do?")
 
+    def _mark_transient_observation(self, message: BaseMessage) -> str:
+        marker = uuid4().hex
+        meta_dict = dict(message.meta_dict or {})
+        meta_dict[self._TRANSIENT_OBSERVATION_KEY] = marker
+        message.meta_dict = meta_dict
+        return marker
+
+    def _remove_transient_observation_from_memory(self, marker: str) -> int:
+        r"""Remove transient observation records from memory.
+
+        This keeps the latest environment observation available for the
+        in-flight reasoning step while preventing it from polluting long-term
+        history.
+        """
+        chat_history_block = getattr(self.memory, "_chat_history_block", None)
+        if chat_history_block is None:
+            return 0
+
+        storage = getattr(chat_history_block, "storage", None)
+        if storage is None:
+            return 0
+
+        if not all(
+                callable(getattr(storage, method_name, None))
+                for method_name in ["load", "clear", "save"]):
+            return 0
+
+        record_dicts = storage.load()
+        if not record_dicts:
+            return 0
+
+        filtered_records = []
+        removed_count = 0
+        for record in record_dicts:
+            message_payload = record.get("message", {})
+            if not isinstance(message_payload, dict):
+                filtered_records.append(record)
+                continue
+
+            # BaseMessage.to_dict flattens meta_dict into top-level keys,
+            # while other message types may keep nested meta_dict.
+            marker_in_flattened = (message_payload.get(
+                self._TRANSIENT_OBSERVATION_KEY) == marker)
+            nested_meta_dict = message_payload.get("meta_dict") or {}
+            marker_in_nested = (isinstance(nested_meta_dict, dict)
+                                and nested_meta_dict.get(
+                                    self._TRANSIENT_OBSERVATION_KEY)
+                                == marker)
+
+            if marker_in_flattened or marker_in_nested:
+                removed_count += 1
+                continue
+
+            filtered_records.append(record)
+
+        if removed_count:
+            storage.clear()
+            storage.save(filtered_records)
+
+        return removed_count
+
     async def perform_action_by_llm(self):
         # Get posts:
         env_prompt = await self.env.to_text_prompt()
@@ -132,12 +210,17 @@ class SocialAgent(ChatAgent):
                 f"platform environments. Notice that don't limit your "
                 f"actions for example to just like the posts. "
                 f"Here is your social media environment: {env_prompt}"))
+
+        transient_marker: str | None = None
+        if not self.persist_environment_observation:
+            transient_marker = self._mark_transient_observation(user_msg)
+
         try:
             agent_log.info(
                 f"Agent {self.social_agent_id} observing environment: "
                 f"{env_prompt}")
             response = await self.astep(user_msg)
-            for tool_call in response.info['tool_calls']:
+            for tool_call in response.info.get('tool_calls', []):
                 action_name = tool_call.tool_name
                 args = tool_call.args
                 agent_log.info(f"Agent {self.social_agent_id} performed "
@@ -148,11 +231,18 @@ class SocialAgent(ChatAgent):
                         f"{tool_call.result}")
                 # Abort graph action for if 100w Agent
                 # self.perform_agent_graph_action(action_name, args)
-
-                return response
+            return response
         except Exception as e:
             agent_log.error(f"Agent {self.social_agent_id} error: {e}")
             return e
+        finally:
+            if transient_marker is not None:
+                removed_count = self._remove_transient_observation_from_memory(
+                    transient_marker)
+                if removed_count:
+                    agent_log.debug(
+                        f"Agent {self.social_agent_id} removed "
+                        f"{removed_count} transient observation record(s).")
 
     async def perform_test(self):
         """

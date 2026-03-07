@@ -19,7 +19,7 @@ from camel.types import ModelPlatformType
 
 import oasis
 from oasis import (ActionType, LLMAction, ManualAction,
-                   generate_twitter_agent_graph)
+                   ObservationConfig, generate_twitter_agent_graph)
 
 
 async def main():
@@ -50,11 +50,26 @@ async def main():
     # Define the available actions for the agents
     available_actions = ActionType.get_default_twitter_actions()
 
+    # Recommended memory settings for long-horizon simulations.
+    social_agent_kwargs = {
+        "message_window_size": 24,
+        "prune_tool_calls_from_memory": True,
+        "persist_environment_observation": False,
+        "observation_config": ObservationConfig(
+            max_posts=8,
+            max_post_text_chars=400,
+            max_group_messages=8,
+            max_group_message_chars=200,
+            max_total_prompt_chars=12000,
+        ),
+    }
+
     agent_graph = await generate_twitter_agent_graph(
         profile_path=("data/twitter_dataset/anonymous_topic_200_1h/"
                       "False_Business_0.csv"),
         model=shared_model_manager,
         available_actions=available_actions,
+        social_agent_kwargs=social_agent_kwargs,
     )
 
     # Define the path to the database
